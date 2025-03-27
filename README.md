@@ -77,6 +77,14 @@ This is the place for you to write reflections:
 ### Mandatory (Publisher) Reflections
 
 #### Reflection Publisher-1
+##### Do we need an interface (or trait in Rust) for Subscriber in the Observer design pattern, or a single Model struct is enough?
+In the BambangShop implementation, I think a single struct model for `Subscriber` is sufficient for now, as there is only one type of behavior for subscribing to product updates. However, in the Observer pattern, the role of the observer (`Subscriber`) is typically defined by an interface or trait to allow flexibility for different types of subscribers to handle notifications in various ways. In the future, if we wanted to extend the system to have multiple types of subscribers, using a trait for `Subscriber` would help decouple the notification handling logic, making the system more extensible and maintainable. So, while it's not necessary now, it’s a good practice to design with the potential for change.
+
+##### Is using Vec sufficient, or is DashMap necessary for ensuring uniqueness of `id` and `url`?
+In the current implementation, I think using a `Vec` to store products and subscribers is not sufficient for ensuring uniqueness and efficient lookups. A `Vec` would require linear searching to find a product by `id` or a subscriber by `url`, which could become inefficient as the system scales. On the other hand, `DashMap` is designed to store key-value pairs with fast, constant-time lookups (`O(1)`) and also guarantees that keys like `id` for products and `url` for subscribers are unique. As both of uniqueness and efficiency are important for scalability, I believe `DashMap` is the right choice for this case.
+
+##### Do we still need DashMap for thread-safety, or could we use the Singleton pattern instead?
+I think the Singleton pattern alone is not sufficient to ensure thread-safety in the case of the `SUBSCRIBERS` map. While the Singleton pattern ensures that only one instance of the `SUBSCRIBERS` map exists throughout the application, it does not handle concurrent access. In a multi-threaded environment, we need a thread-safe collection like `DashMap`, which ensures safe concurrent reads and writes. Without `DashMap`, we would have to manually manage synchronization, which could be error-prone and less efficient. Therefore, the combination of the Singleton pattern for a single instance and `DashMap` for thread safety is necessary in this case.
 
 #### Reflection Publisher-2
 
